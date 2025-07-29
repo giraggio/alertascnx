@@ -31,12 +31,12 @@ def scrapear_tabla_expediente(url):
 def enviar_mail_outlook(nuevos_df):
     remitente = os.environ["OUTLOOK_USER"]
     password = os.environ["OUTLOOK_PASSWORD"]
-    destinatario = os.environ["MAIL_DESTINO"]
+    destinatarios = [email.strip() for email in os.environ["MAIL_DESTINO"].split(",")]
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = "📄 Nuevos documentos en expediente SEIA"
     msg["From"] = remitente
-    msg["To"] = destinatario
+    msg["To"] = ", ".join(destinatarios)  # para mostrar todos en el encabezado
 
     cuerpo_html = "<h3>Se detectaron nuevos documentos:</h3><ul>"
     for _, fila in nuevos_df.iterrows():
@@ -48,7 +48,8 @@ def enviar_mail_outlook(nuevos_df):
     with smtplib.SMTP("smtp.gmail.com", 587) as server:
         server.starttls()
         server.login(remitente, password)
-        server.sendmail(remitente, destinatario, msg.as_string())
+        server.sendmail(remitente, destinatarios, msg.as_string())
+
 
 url = "https://seia.sea.gob.cl/expediente/xhr_expediente2.php?id_expediente=2160211381"
 df_actual = scrapear_tabla_expediente(url)
