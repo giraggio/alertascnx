@@ -28,10 +28,11 @@ def scrapear_tabla_expediente(url):
 url = "https://seia.sea.gob.cl/expediente/xhr_expediente2.php?id_expediente=2160211381"
 df_actual = scrapear_tabla_expediente(url)
 df_actual = df_actual[:30]  # forzar alerta en testeo
-
+print(df_actual.shape)
 # Si no existe archivo anterior, crear uno vacío
 archivo_csv = "ultimo_expediente.csv"
 if not os.path.exists(archivo_csv):
+    print("No se encuentra archivo")
     df_actual.iloc[:0].to_csv(archivo_csv, index=False)
 
 df_anterior = pd.read_csv(archivo_csv)
