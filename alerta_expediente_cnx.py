@@ -2,6 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 def scrapear_tabla_expediente(url):
     response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
