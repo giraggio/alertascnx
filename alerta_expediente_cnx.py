@@ -45,7 +45,7 @@ def enviar_mail_outlook(nuevos_df):
 
     msg.attach(MIMEText(cuerpo_html, "html"))
 
-    with smtplib.SMTP("smtp.office365.com", 587) as server:
+    with smtplib.SMTP("smtp.gmail.com", 587) as server:
         server.starttls()
         server.login(remitente, password)
         server.sendmail(remitente, destinatario, msg.as_string())
