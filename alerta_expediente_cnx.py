@@ -27,7 +27,7 @@ def scrapear_tabla_expediente(url):
 
 url = "https://seia.sea.gob.cl/expediente/xhr_expediente2.php?id_expediente=2160211381"
 df_actual = scrapear_tabla_expediente(url)
-df_actual = df_actual[:312]  # forzar alerta en testeo
+df_actual = df_actual[:310]  # forzar alerta en testeo
 
 # Si no existe archivo anterior, crear uno vacío
 archivo_csv = "ultimo_expediente.csv"
