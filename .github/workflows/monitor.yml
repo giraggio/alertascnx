@@ -3,7 +3,7 @@ name: Monitor SEIA
 on:
   workflow_dispatch:
   schedule:
-    - cron: '1 */2 * * *'  # cada 6 horas
+    - cron: '1 */2 * * *'  # cada 2 horas, a los 01 minutos
 
 jobs:
   run-monitor:
@@ -27,3 +27,16 @@ jobs:
           OUTLOOK_USER: ${{ secrets.OUTLOOK_USER }}
           OUTLOOK_PASSWORD: ${{ secrets.OUTLOOK_PASSWORD }}
           MAIL_DESTINO: ${{ secrets.MAIL_DESTINO }}
+
+      - name: Set GitHub remote with token
+        run: git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}
+
+      - name: Commit updated CSV to repo
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add ultimo_expediente.csv
+          git commit -m "Actualizar base de datos de expediente" || echo "Sin cambios que commitear"
+          git push
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
