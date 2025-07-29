@@ -22,7 +22,7 @@ jobs:
         run: pip install beautifulsoup4 pandas requests
 
       - name: Run script
-        run: python monitor_seia.py
+        run: python alerta_expediente_cnx.py
         env:
           OUTLOOK_USER: ${{ secrets.OUTLOOK_USER }}
           OUTLOOK_PASSWORD: ${{ secrets.OUTLOOK_PASSWORD }}
