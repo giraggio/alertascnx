@@ -62,7 +62,7 @@ if not os.path.exists(archivo_csv):
     
 
 df_anterior = pd.read_csv(archivo_csv)
-df_anterior = df_anterior[:300]
+# df_anterior = df_anterior[:300]
 # Comparar
 nuevos = df_actual[~df_actual["url_documento"].isin(df_anterior["url_documento"])]
 
