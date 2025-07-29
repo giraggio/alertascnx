@@ -25,6 +25,28 @@ def scrapear_tabla_expediente(url):
             filas.append(fila)
     return pd.DataFrame(filas)
 
+def enviar_mail_outlook(nuevos_df):
+    remitente = os.environ["OUTLOOK_USER"]
+    password = os.environ["OUTLOOK_PASSWORD"]
+    destinatario = os.environ["MAIL_DESTINO"]
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = "📄 Nuevos documentos en expediente SEIA"
+    msg["From"] = remitente
+    msg["To"] = destinatario
+
+    cuerpo_html = "<h3>Se detectaron nuevos documentos:</h3><ul>"
+    for _, fila in nuevos_df.iterrows():
+        cuerpo_html += f"<li><b>{fila['titulo']}</b> – {fila['fecha']} – <a href='{fila['url_documento']}'>Abrir</a></li>"
+    cuerpo_html += "</ul>"
+
+    msg.attach(MIMEText(cuerpo_html, "html"))
+
+    with smtplib.SMTP("smtp.office365.com", 587) as server:
+        server.starttls()
+        server.login(remitente, password)
+        server.sendmail(remitente, destinatario, msg.as_string())
+
 url = "https://seia.sea.gob.cl/expediente/xhr_expediente2.php?id_expediente=2160211381"
 df_actual = scrapear_tabla_expediente(url)
 
@@ -34,6 +56,7 @@ archivo_csv = "ultimo_expediente.csv"
 if not os.path.exists(archivo_csv):
     print("No se encuentra archivo")
     df_actual.iloc[:0].to_csv(archivo_csv, index=False)
+    
 
 df_anterior = pd.read_csv(archivo_csv)
 df_anterior = df_anterior[:300]
@@ -43,6 +66,7 @@ nuevos = df_actual[~df_actual["url_documento"].isin(df_anterior["url_documento"]
 if not nuevos.empty:
     print("⚠️ Nuevos documentos encontrados:")
     print(nuevos[["identificador", "titulo", "fecha", "url_documento"]])
+    enviar_mail_outlook(nuevos)
 else:
     print("✅ Sin cambios en la tabla.")
 
