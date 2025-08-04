@@ -12,11 +12,10 @@ def scrapear_tabla_expediente(url):
 
     filas = []
     rows = soup.find_all("tr")
-
-    for i, row in enumerate(rows):
+    for row in rows:
         cols = row.find_all("td")
 
-        # Caso completo (documento con 8 columnas esperadas)
+        # Caso completo (8 columnas)
         if len(cols) == 8:
             try:
                 url_doc = cols[7].find("button")["onclick"].split("'")[1]
@@ -35,14 +34,9 @@ def scrapear_tabla_expediente(url):
             }
             filas.append(fila)
 
-        # Caso incompleto (Documento por cargar)
+        # Caso incompleto con "Documento por cargar"
         elif any("documento por cargar" in col.get_text(strip=True).lower() for col in cols):
             texto = " ".join(col.get_text(strip=True) for col in cols)
-
-            # Crear identificador único usando posición y contenido
-            clave_unica = f"{i}-{texto}"
-            unique_id = "doc_por_cargar_" + hashlib.md5(clave_unica.encode()).hexdigest()
-
             fila = {
                 "n_fila": "",
                 "oficio": "",
@@ -51,7 +45,7 @@ def scrapear_tabla_expediente(url):
                 "emisor": "",
                 "receptor": "",
                 "fecha": "",
-                "url_documento": unique_id  # permite identificarlo sin repetirlo
+                "url_documento": "documento_por_cargar"
             }
             filas.append(fila)
 
@@ -101,7 +95,7 @@ if not os.path.exists(archivo_csv):
 df_anterior = pd.read_csv(archivo_csv)
 
 # Detectar novedades
-nuevos = df_actual[~df_actual["url_documento"].isin(df_anterior["url_documento"])]
+nuevos = df_actual[~df_actual["identificador"].isin(df_anterior["identificador"])]
 
 if not nuevos.empty:
     print("⚠️ Nuevos documentos encontrados:")
@@ -112,4 +106,3 @@ else:
 
 # Actualizar base
 df_actual.to_csv(archivo_csv, index=False)
-
