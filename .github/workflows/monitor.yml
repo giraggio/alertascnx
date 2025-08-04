@@ -3,7 +3,7 @@ name: Monitor SEIA
 on:
   workflow_dispatch:
   schedule:
-    - cron: '1 */2 * * *'  # cada 2 horas, a los 01 minutos
+    - cron: '1 */1 * * *'  # cada 2 horas, a los 01 minutos
 
 jobs:
   run-monitor:
