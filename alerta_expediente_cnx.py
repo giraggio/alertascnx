@@ -94,8 +94,11 @@ if not os.path.exists(archivo_csv):
 
 df_anterior = pd.read_csv(archivo_csv)
 
+df_actual["clave_unica"] = df_actual["identificador"] + "|" + df_actual["url_documento"].fillna("")
+df_anterior["clave_unica"] = df_anterior["identificador"] + "|" + df_anterior["url_documento"].fillna("")
+
 # Detectar novedades
-nuevos = df_actual[~df_actual["identificador"].isin(df_anterior["identificador"])]
+nuevos = df_actual[~df_actual["clave_unica"].isin(df_anterior["clave_unica"])]
 
 if not nuevos.empty:
     print("⚠️ Nuevos documentos encontrados:")
@@ -106,3 +109,4 @@ else:
 
 # Actualizar base
 df_actual.to_csv(archivo_csv, index=False)
+
