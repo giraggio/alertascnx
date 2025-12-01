@@ -15,37 +15,17 @@ def scrapear_tabla_expediente(url):
     for row in rows:
         cols = row.find_all("td")
 
-        # Caso completo (8 columnas)
-        if len(cols) == 8:
+        if len(cols) == 4:
             try:
-                url_doc = cols[7].find("button")["onclick"].split("'")[1]
-            except Exception:
+                url_doc = cols[3].find("button")["onclick"].split("'")[1]
+            except:
                 url_doc = ""
 
             fila = {
-                "n_fila": cols[0].get_text(strip=True),
-                "oficio": cols[1].get_text(strip=True),
-                "identificador": cols[2].get_text(strip=True),
-                "titulo": cols[3].get_text(strip=True),
-                "emisor": cols[4].get_text(strip=True),
-                "receptor": cols[5].get_text(strip=True),
-                "fecha": cols[6].get_text(strip=True),
-                "url_documento": url_doc
-            }
-            filas.append(fila)
-
-        # Caso incompleto con "Documento por cargar"
-        elif any("documento por cargar" in col.get_text(strip=True).lower() for col in cols):
-            texto = " ".join(col.get_text(strip=True) for col in cols)
-            fila = {
-                "n_fila": "",
-                "oficio": "",
-                "identificador": "",
-                "titulo": texto,
-                "emisor": "",
-                "receptor": "",
-                "fecha": "",
-                "url_documento": "documento_por_cargar"
+                "Fecha": cols[0].text.strip(),
+                "Recursos": cols[1].text.strip(),
+                "Estado": cols[2].text.strip(),
+                "Documento": f"https://seia.sea.gob.cl{url_doc}"
             }
             filas.append(fila)
 
@@ -57,20 +37,21 @@ def enviar_mail_outlook(nuevos_df):
     destinatarios = [email.strip() for email in os.environ["MAIL_DESTINO"].split(",")]
 
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = "📄 Nuevos documentos en expediente SEIA"
+    msg["Subject"] = "📄 Nuevos documentos en ficha de Recursos Administrativos"
     msg["From"] = remitente
     msg["To"] = ", ".join(destinatarios)
 
     cuerpo_html = "<h3>Se detectaron nuevos documentos:</h3><ul>"
 
     for _, fila in nuevos_df.iterrows():
-        titulo = fila["titulo"] or "(sin título)"
-        fecha = fila["fecha"] or "(sin fecha)"
+        titulo = fila["Recursos"] or "(sin título)"
+        fecha = fila["Fecha"] or "(sin fecha)"
+        estado = fila["Estado"] or "(sin estado)"
 
-        if fila["url_documento"] == "documento_por_cargar":
+        if fila["Documento"] == "documento_por_cargar":
             cuerpo_html += f"<li><b>{titulo}</b> – {fecha} – <i>Documento aún no disponible</i></li>"
         else:
-            cuerpo_html += f"<li><b>{titulo}</b> – {fecha} – <a href='{fila['url_documento']}'>Abrir</a></li>"
+            cuerpo_html += f"<li><b>{titulo}</b> – {fecha} – {estado} – <a href='{fila['Documento']}'>Abrir</a></li>"
 
     cuerpo_html += "</ul>"
     msg.attach(MIMEText(cuerpo_html, "html"))
@@ -82,12 +63,12 @@ def enviar_mail_outlook(nuevos_df):
 
 # ----------------------------- EJECUCIÓN -----------------------------
 
-url = "https://seia.sea.gob.cl/expediente/xhr_expediente2.php?id_expediente=2160211381"
+url = "https://seia.sea.gob.cl/recursos/xhr_principal.php?modo=ficha&id_expediente=2160211381"
 df_actual = scrapear_tabla_expediente(url)
 print(f"🔍 Documentos encontrados: {df_actual.shape[0]}")
 
 # Crear archivo si no existe
-archivo_csv = "ultimo_expediente.csv"
+archivo_csv = "test_reclamos.csv"
 if not os.path.exists(archivo_csv):
     print("📂 No se encontró archivo anterior. Creando archivo base vacío.")
     df_actual.iloc[:0].to_csv(archivo_csv, index=False)
