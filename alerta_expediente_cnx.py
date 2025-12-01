@@ -75,15 +75,12 @@ if not os.path.exists(archivo_csv):
 
 df_anterior = pd.read_csv(archivo_csv)
 
-df_actual["clave_unica"] = df_actual["identificador"] + "|" + df_actual["url_documento"].fillna("")
-df_anterior["clave_unica"] = df_anterior["identificador"] + "|" + df_anterior["url_documento"].fillna("")
 
 # Detectar novedades
-nuevos = df_actual[~df_actual["clave_unica"].isin(df_anterior["clave_unica"])]
-
+nuevos = df_actual[~df_actual["Documento"].isin(df_anterior["Documento"])]
 if not nuevos.empty:
     print("⚠️ Nuevos documentos encontrados:")
-    print(nuevos[["titulo", "fecha", "url_documento"]])
+    print(nuevos[["Recursos", "Fecha", "Documento"]])
     enviar_mail_outlook(nuevos)
 else:
     print("✅ Sin cambios en la tabla.")
