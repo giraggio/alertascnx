@@ -69,9 +69,7 @@ print(f"🔍 Documentos encontrados: {df_actual.shape[0]}")
 
 # Crear archivo si no existe
 archivo_csv = "test_reclamos.csv"
-if not os.path.exists(archivo_csv):
-    print("📂 No se encontró archivo anterior. Creando archivo base vacío.")
-    df_actual.iloc[:0].to_csv(archivo_csv, index=False)
+
 
 df_anterior = pd.read_csv(archivo_csv)
 
@@ -89,5 +87,6 @@ else:
 df_actual.to_csv(archivo_csv, index=False)
 
 # cambio random
+
 
 
