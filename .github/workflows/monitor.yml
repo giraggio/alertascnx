@@ -35,7 +35,7 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git add test_reclamos.csv
+          git add ultimo_expediente_tovaku.csv
           git commit -m "Actualizar base de datos de expediente" || echo "Sin cambios que commitear"
           git push
         env:
