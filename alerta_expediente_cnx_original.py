@@ -82,7 +82,7 @@ def enviar_mail_outlook(nuevos_df):
 
 # ----------------------------- EJECUCIÓN -----------------------------
 
-url = "https://seia.sea.gob.cl/expediente/xhr_expediente2.php?id_expediente=2160211381"
+url = "https://seia.sea.gob.cl/expediente/xhr_expediente2.php?id_expediente=2165803565"
 df_actual = scrapear_tabla_expediente(url)
 print(f"🔍 Documentos encontrados: {df_actual.shape[0]}")
 
@@ -111,5 +111,6 @@ else:
 df_actual.to_csv(archivo_csv, index=False)
 
 # cambio random
+
 
 
