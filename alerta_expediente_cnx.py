@@ -87,7 +87,7 @@ df_actual = scrapear_tabla_expediente(url)
 print(f"🔍 Documentos encontrados: {df_actual.shape[0]}")
 
 # Crear archivo si no existe
-archivo_csv = "ultimo_expediente.csv"
+archivo_csv = "ultimo_expediente_tovaku.csv"
 if not os.path.exists(archivo_csv):
     print("📂 No se encontró archivo anterior. Creando archivo base vacío.")
     df_actual.iloc[:0].to_csv(archivo_csv, index=False)
@@ -111,6 +111,7 @@ else:
 df_actual.to_csv(archivo_csv, index=False)
 
 # cambio random
+
 
 
 
